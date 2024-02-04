@@ -13,7 +13,7 @@
                     <ItemsPanelTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="150" />
@@ -33,70 +33,88 @@
             <ColumnDefinition Width="0.3*" MaxWidth="400" />
         </Grid.ColumnDefinitions>
         <ScrollViewer Grid.Column="0">
-            <ItemsControl ItemsSource="{Binding ClassRecords}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <ItemsControl ItemsSource="{Binding TwoDigitBalanceAccountRecords}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <ItemsControl ItemsSource="{Binding Records}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <ItemsControl Style="{StaticResource gridRecordStyle}">
-                                                            <TextBlock Text="{Binding BalanceAccount}" Grid.Column="0" />
-                                                            <TextBlock Text="{Binding IncomingBalanceActive}" Grid.Column="1" />
-                                                            <TextBlock Text="{Binding IncomingBalancePassive}" Grid.Column="2" />
-                                                            <TextBlock Text="{Binding TurnoverDebit}" Grid.Column="3" />
-                                                            <TextBlock Text="{Binding TurnoverCredit}" Grid.Column="4" />
-                                                            <TextBlock Text="{Binding OutgoingBalanceActive}" Grid.Column="5" />
-                                                            <TextBlock Text="{Binding OutgoingBalancePassive}" Grid.Column="6" />
-                                                        </ItemsControl>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                            <ItemsControl Style="{StaticResource gridRecordStyle}">
-                                                <TextBlock Text="{Binding Total.BalanceAccount}" Grid.Column="0" />
-                                                <TextBlock Text="{Binding Total.IncomingBalanceActive}" Grid.Column="1" />
-                                                <TextBlock Text="{Binding Total.IncomingBalancePassive}" Grid.Column="2" />
-                                                <TextBlock Text="{Binding Total.TurnoverDebit}" Grid.Column="3" />
-                                                <TextBlock Text="{Binding Total.TurnoverCredit}" Grid.Column="4" />
-                                                <TextBlock Text="{Binding Total.OutgoingBalanceActive}" Grid.Column="5" />
-                                                <TextBlock Text="{Binding Total.OutgoingBalancePassive}" Grid.Column="6" />
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <ItemsControl Style="{StaticResource gridRecordStyle}">
-                                <TextBlock Text="{Binding Total.BalanceAccount}" Grid.Column="0" />
-                                <TextBlock Text="{Binding Total.IncomingBalanceActive}" Grid.Column="1" />
-                                <TextBlock Text="{Binding Total.IncomingBalancePassive}" Grid.Column="2" />
-                                <TextBlock Text="{Binding Total.TurnoverDebit}" Grid.Column="3" />
-                                <TextBlock Text="{Binding Total.TurnoverCredit}" Grid.Column="4" />
-                                <TextBlock Text="{Binding Total.OutgoingBalanceActive}" Grid.Column="5" />
-                                <TextBlock Text="{Binding Total.OutgoingBalancePassive}" Grid.Column="6" />
-                            </ItemsControl>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <StackPanel>
+                <TextBlock Text="Оборотная ведомость по балансовы счетам" TextAlignment="Center" />
+                <ItemsControl Style="{StaticResource gridRecordStyle}">
+                    <TextBlock Text="Б/сч" TextAlignment="Center" Grid.Column="0" />
+                    <TextBlock Text="ВХОДЯЩЕЕ САЛЬДО" TextAlignment="Center" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" />
+                    <TextBlock Text="ОБОРОТЫ" TextAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" />
+                    <TextBlock Text="ИСХОДЯЩЕЕ САЛЬДО" TextAlignment="Center" Grid.Column="5" Grid.ColumnSpan="2" />
+                </ItemsControl>
+                <ItemsControl Style="{StaticResource gridRecordStyle}">
+                    <TextBlock Text="Актив" TextAlignment="Center" Grid.Column="1" />
+                    <TextBlock Text="Пассив" TextAlignment="Center" Grid.Column="2" />
+                    <TextBlock Text="Дебет" TextAlignment="Center" Grid.Column="3" />
+                    <TextBlock Text="Кредит" TextAlignment="Center" Grid.Column="4" />
+                    <TextBlock Text="Актив" TextAlignment="Center" Grid.Column="5" />
+                    <TextBlock Text="Пассив" TextAlignment="Center" Grid.Column="6" />
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding ClassRecords}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Total.BalanceAccount, StringFormat='КЛАСС {0}'}" TextAlignment="Center" />
+                                <ItemsControl ItemsSource="{Binding TwoDigitBalanceAccountRecords}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <ItemsControl ItemsSource="{Binding Records}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <ItemsControl Style="{StaticResource gridRecordStyle}">
+                                                                <TextBlock Text="{Binding BalanceAccount}" Grid.Column="0" />
+                                                                <TextBlock Text="{Binding IncomingBalanceActive}" Grid.Column="1" />
+                                                                <TextBlock Text="{Binding IncomingBalancePassive}" Grid.Column="2" />
+                                                                <TextBlock Text="{Binding TurnoverDebit}" Grid.Column="3" />
+                                                                <TextBlock Text="{Binding TurnoverCredit}" Grid.Column="4" />
+                                                                <TextBlock Text="{Binding OutgoingBalanceActive}" Grid.Column="5" />
+                                                                <TextBlock Text="{Binding OutgoingBalancePassive}" Grid.Column="6" />
+                                                            </ItemsControl>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <ItemsControl Style="{StaticResource gridRecordStyle}">
+                                                    <TextBlock Text="{Binding Total.BalanceAccount}" Grid.Column="0" />
+                                                    <TextBlock Text="{Binding Total.IncomingBalanceActive}" Grid.Column="1" />
+                                                    <TextBlock Text="{Binding Total.IncomingBalancePassive}" Grid.Column="2" />
+                                                    <TextBlock Text="{Binding Total.TurnoverDebit}" Grid.Column="3" />
+                                                    <TextBlock Text="{Binding Total.TurnoverCredit}" Grid.Column="4" />
+                                                    <TextBlock Text="{Binding Total.OutgoingBalanceActive}" Grid.Column="5" />
+                                                    <TextBlock Text="{Binding Total.OutgoingBalancePassive}" Grid.Column="6" />
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl Style="{StaticResource gridRecordStyle}">
+                                    <TextBlock Text="ПО КЛАССУ" Grid.Column="0" />
+                                    <TextBlock Text="{Binding Total.IncomingBalanceActive}" Grid.Column="1" />
+                                    <TextBlock Text="{Binding Total.IncomingBalancePassive}" Grid.Column="2" />
+                                    <TextBlock Text="{Binding Total.TurnoverDebit}" Grid.Column="3" />
+                                    <TextBlock Text="{Binding Total.TurnoverCredit}" Grid.Column="4" />
+                                    <TextBlock Text="{Binding Total.OutgoingBalanceActive}" Grid.Column="5" />
+                                    <TextBlock Text="{Binding Total.OutgoingBalancePassive}" Grid.Column="6" />
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
         <StackPanel Grid.Column="1">
             <Button x:Name="loadFileButton" Width="150" Height="30" Content="Загрузить файл" Command="{Binding LoadFileCommand}" />
