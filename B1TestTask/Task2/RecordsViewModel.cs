@@ -30,7 +30,7 @@ namespace B1TestTask.Task2
 
         private void LoadRecords()
         {
-            Records = new ObservableCollection<Record>(_database.GetAllRecords());
+            Records = new ObservableCollection<Record>(_database.GetRecords());
             TwoDigitBalanceAccountRecords.Clear();
             ClassRecords.Clear();
 
@@ -71,8 +71,12 @@ namespace B1TestTask.Task2
             if (openFileDialog.ShowDialog() == true)
             {
                 string filePath = openFileDialog.FileName;
-                var records = ExcelFileReader.ReadFile(filePath);
+                var records = ExcelFileReader.ReadRecords(filePath);
+                var twoDigitBalanceAccountTotals = ExcelFileReader.ReadTwoDigitBalanceAccountTotals(filePath);
+                var classTotals = ExcelFileReader.ReadClassTotals(filePath);
                 _database.InsertRecords(records);
+                _database.InsertTwoDigitBalanceAccountTotals(twoDigitBalanceAccountTotals);
+                _database.InsertClassTotals(classTotals);
                 LoadRecords();
                 LoadedFilesNames.Add(filePath.Split('\\')[^1]);
             }

@@ -21,93 +21,75 @@ namespace B1TestTask.Task2
 
                 foreach (var record in records)
                 {
-                    var formatProvider = System.Globalization.CultureInfo.GetCultureInfo("en-US");
-                    string incomingBalanceActiveString = record.IncomingBalanceActive.ToString(formatProvider);
-                    string incomingBalancePassiveString = record.IncomingBalancePassive.ToString(formatProvider);
-                    string debitString = record.TurnoverDebit.ToString(formatProvider);
-                    string creditString = record.TurnoverCredit.ToString(formatProvider);
-                    string sqlExpression = @$"INSERT INTO turnovers
-(balance_account, incoming_balance_active, incoming_balance_passive, debit, credit)
-VALUES({record.BalanceAccount}, {incomingBalanceActiveString}, {incomingBalancePassiveString},
-{debitString}, {creditString})
-ON CONFLICT DO UPDATE SET incoming_balance_active = incoming_balance_active + {incomingBalanceActiveString},
-incoming_balance_passive = incoming_balance_passive + {incomingBalancePassiveString},
-debit = debit + {debitString}, credit = credit + {creditString};";
-
-                    var insertRowCommand = new SqliteCommand(sqlExpression, connection);
-                    insertRowCommand.ExecuteNonQuery();
+                    InsertRecordIntoTable(record, "records", connection);
                 }
             }
         }
 
-        public IEnumerable<Record> GetAllRecords()
+        public void InsertTwoDigitBalanceAccountTotals(IEnumerable<Record> twoDigitBalanceAccountTotals)
         {
-            return GetRecordsFromTable("full_turnovers");
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                foreach (var record in twoDigitBalanceAccountTotals)
+                {
+                    InsertRecordIntoTable(record, "two_digit_balance_account_totals", connection);
+                }
+            }
+        }
+
+        public void InsertClassTotals(IEnumerable<Record> classTotals)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                foreach (var record in classTotals)
+                {
+                    InsertRecordIntoTable(record, "class_totals", connection);
+                }
+            }
+        }
+
+        public IEnumerable<Record> GetRecords()
+        {
+            return GetRecordsFromTable("records");
         }
 
         public IEnumerable<Record> GetTwoDigitBalanceAccountTotals()
         {
-            return GetRecordsFromTable("full_turnovers_grouped_by_balance_account");
+            return GetRecordsFromTable("two_digit_balance_account_totals");
         }
 
         public IEnumerable<Record> GetClassTotals()
         {
-            return GetRecordsFromTable("full_turnovers_grouped_by_class");
+            return GetRecordsFromTable("class_totals");
         }
 
-        public Record GetTotalRecord()
+        private void InsertRecordIntoTable(Record record, string tableName, SqliteConnection connection)
         {
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                connection.Open();
+            var formatProvider = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+            string incomingBalanceActiveString = record.IncomingBalanceActive.ToString(formatProvider);
+            string incomingBalancePassiveString = record.IncomingBalancePassive.ToString(formatProvider);
+            string turnoverDebitString = record.TurnoverDebit.ToString(formatProvider);
+            string turnoverCreditString = record.TurnoverCredit.ToString(formatProvider);
+            string outgoingBalanceActiveString = record.OutgoingBalanceActive.ToString(formatProvider);
+            string outgoingBalancePassiveString = record.OutgoingBalancePassive.ToString(formatProvider);
 
-                string sqlExpression = @"SELECT ifnull(SUM(incoming_balance_active), 0),
-ifnull(SUM(incoming_balance_passive), 0), ifnull(SUM(debit), 0), ifnull(SUM(credit), 0),
-ifnull(SUM(outgoing_balance_active), 0), ifnull(SUM(outgoing_balance_passive), 0) FROM full_turnovers";
+            string sqlExpression = @$"INSERT INTO {tableName}
+(balance_account, incoming_balance_active, incoming_balance_passive, turnover_debit,turnover_credit,
+outgoing_balance_active, outgoing_balance_passive)
+VALUES({record.BalanceAccount}, {incomingBalanceActiveString}, {incomingBalancePassiveString},
+{turnoverDebitString}, {turnoverCreditString}, {outgoingBalanceActiveString}, {outgoingBalancePassiveString})
+ON CONFLICT DO UPDATE SET incoming_balance_active = incoming_balance_active + {incomingBalanceActiveString},
+incoming_balance_passive = incoming_balance_passive + {incomingBalancePassiveString},
+turnover_debit = turnover_debit + {turnoverDebitString}, turnover_credit = turnover_credit + {turnoverCreditString},
+outgoing_balance_active = outgoing_balance_active + {outgoingBalanceActiveString},
+outgoing_balance_passive = outgoing_balance_passive + {outgoingBalancePassiveString};";
 
-                var selectCommand = new SqliteCommand(sqlExpression, connection);
-                using (var reader = selectCommand.ExecuteReader())
-                {
-                    if (reader.HasRows && reader.Read())
-                    {
-                        var record = new Record
-                        {
-                            BalanceAccount = 0,
-                            IncomingBalanceActive = reader.GetDecimal(0),
-                            IncomingBalancePassive = reader.GetDecimal(1),
-                            TurnoverDebit = reader.GetDecimal(2),
-                            TurnoverCredit = reader.GetDecimal(3),
-                            OutgoingBalanceActive = reader.GetDecimal(4),
-                            OutgoingBalancePassive = reader.GetDecimal(5)
-                        };
-                        return record;
-                    }
-                }
-            }
-            return new Record();
-        }
-
-        public IEnumerable<string> GetClassDescriptions()
-        {
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                connection.Open();
-
-                string sqlExpression = "SELECT description FROM classes";
-
-                var selectCommand = new SqliteCommand(sqlExpression, connection);
-                using (var reader = selectCommand.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            string className = reader.GetString(0);
-                            yield return className;
-                        }
-                    }
-                }
-            }
+            var insertRowCommand = new SqliteCommand(sqlExpression, connection);
+            insertRowCommand.ExecuteNonQuery();
         }
 
         private IEnumerable<Record> GetRecordsFromTable(string tableName)
